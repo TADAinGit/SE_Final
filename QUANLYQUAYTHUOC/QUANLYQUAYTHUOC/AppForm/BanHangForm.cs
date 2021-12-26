@@ -110,8 +110,9 @@ namespace QUANLYQUAYTHUOC.AppForm
             int maHD = 0;
             string tenKH = "";
             string sdtKH = "";
-            // Check có hàng hoặc đã nhận tiền mới cho thanh toán
-            if (listThongTinDonHang.Items.Count <= 0 && txtTienNhan.Text.Length <= 0) return;
+            
+            // Check có hàng hoặc đã nhận tiền đủ/dư mới cho thanh toán
+            if (listThongTinDonHang.Items.Count <= 0 || txtTienNhan.Text.Length <= 0) return;
 
             // Thanh toán cho khách hàng có điền thông tin
             if (txtPhone.Text.Length > 0 && txtKhachHang.Text.Length > 0)
@@ -160,8 +161,7 @@ namespace QUANLYQUAYTHUOC.AppForm
             string maNhanVien = new NhanVienBUS().GetUserInformation().MaNhanVien;
 
             report.InitData(maHoaDon.ToString(), DateTime.Today, tenNhanVien, maNhanVien, tenKH, sdtKH, txtTienNhan.Text, txtTienThua.Text, hoaDon.GetInvoiceDetailById(maHoaDon));
-            report.ExportToPdf(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + @"\Downloads\invoice.pdf"
-);
+            report.ExportToPdf(Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + @"\invoice.pdf");
         }
 
         private void btnReset_Click(object sender, EventArgs e)
