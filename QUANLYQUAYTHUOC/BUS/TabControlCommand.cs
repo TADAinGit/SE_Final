@@ -20,24 +20,7 @@ namespace BUS
 
         public override void Execute()
         {
-            bool isExist = false;
-            foreach (XtraTabPage page in tab.TabParent.TabPages)
-            {
-                if (page.Text == tab.TabName)
-                {
-                    isExist = true;
-                    tab.TabParent.SelectedTabPage = page;
-                }
-            }
-            if (isExist == false)
-            {
-                XtraTabPage pageControl = new XtraTabPage();
-                pageControl.PageVisible = true;
-                pageControl.Text = tab.TabName;
-                pageControl.Controls.Add(tab.UserControl);
-                tab.TabParent.TabPages.Add(pageControl);
-                tab.TabParent.SelectedTabPage = pageControl;
-            }
+            tab.SetUpTab();
         }
     }
 
@@ -66,6 +49,28 @@ namespace BUS
         }
         #endregion
 
+        public void SetUpTab() 
+        {
+            bool isExist = false;
+            foreach (XtraTabPage page in TabParent.TabPages)
+            {
+                if (page.Text == tabName)
+                {
+                    isExist = true;
+                    TabParent.SelectedTabPage = page;
+                }
+            }
+            if (isExist == false)
+            {
+                XtraTabPage pageControl = new XtraTabPage();
+                pageControl.PageVisible = true;
+                pageControl.Text = tabName;
+                pageControl.Controls.Add(userControl);
+                TabParent.TabPages.Add(pageControl);
+                TabParent.SelectedTabPage = pageControl;
+            }
+        }
+
         public override Tab Clone()
         {
             return (Tab) this.MemberwiseClone();
@@ -75,7 +80,6 @@ namespace BUS
     public abstract class Tab
     {
         private XtraTabControl tabParent;
-        
 
         public Tab(XtraTabControl tabParent)
         {
