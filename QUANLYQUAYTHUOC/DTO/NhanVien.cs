@@ -7,6 +7,142 @@ using System.Threading.Tasks;
 
 namespace DTO
 {
+    public interface INhanVienBuidler 
+    {
+        void SetUserId(string maNhanvien);
+        void SetUserName(string tenNhanVien);
+        void SetUserBirth(DateTime ngaySinh);
+        void SetUserGender(bool gioiTinh);
+        void SetUserCIN(string cmnd);
+        void SetUserPhone(string sdt);
+        void SetUserAddress(string diaChi);
+        void SetUserFirstDayWork(DateTime ngayVaoLam);
+        void SetUserSalary(Decimal luong);
+        void SetUserRole(int phanQuyen);
+        NhanVien GetNhanVien();
+    }
+
+    public class NhanVienBuilder : INhanVienBuidler
+    {
+        NhanVien nhanVien = new NhanVien();
+
+        public void SetUserId(string maNhanVien)
+        {
+            nhanVien.MaNhanVien = maNhanVien;
+        }
+
+        public void SetUserName(string tenNhanVien)
+        {
+            nhanVien.TenNhanVien = tenNhanVien;
+        }
+        public void SetUserBirth(DateTime ngaySinh)
+        {
+            nhanVien.NgaySinh = ngaySinh;
+        }
+
+        public void SetUserGender(bool gioiTinh)
+        {
+            nhanVien.GioiTinh = gioiTinh;
+        }
+
+        public void SetUserCIN(string cmnd)
+        {
+            nhanVien.CMND = cmnd;
+        }
+
+        public void SetUserPhone(string sdt)
+        {
+            nhanVien.SDT = sdt;
+        }
+
+        public void SetUserAddress(string diaChi)
+        {
+            nhanVien.DiaChi = diaChi;
+        }
+
+        public void SetUserFirstDayWork(DateTime ngayVaoLam)
+        {
+            nhanVien.NgayVaoLam = ngayVaoLam;
+        }
+
+        public void SetUserSalary(Decimal luong)
+        {
+            nhanVien.Luong = luong;
+        }
+
+        public void SetUserRole(int phanQuyen)
+        {
+            nhanVien.PhanQuyen = phanQuyen;
+        }
+
+        public NhanVien GetNhanVien()
+        {
+            return nhanVien;
+        }
+
+    }
+
+    public abstract class Creator
+    {
+        protected INhanVienBuidler _builder;
+
+        public Creator(INhanVienBuidler builder)
+        {
+            _builder = builder;
+        }
+
+        public abstract void CreateNhanVien(
+            string maNhanVien,
+            string tenNhanVien,
+            DateTime ngaySinh,
+            bool gioiTinh,
+            string cmnd,
+            string sdt,
+            string diaChi,
+            DateTime ngayVaoLam,
+            Decimal luong,
+            int phanQuyen
+            );
+
+        public abstract NhanVien GetNhanVien();
+    }
+
+    public class NhanVienCreator : Creator
+    {
+        public NhanVienCreator(INhanVienBuidler buidler) : base(buidler)
+        { }
+
+        public override void CreateNhanVien(
+            string maNhanVien,
+            string tenNhanVien,
+            DateTime ngaySinh,
+            bool gioiTinh,
+            string cmnd,
+            string sdt,
+            string diaChi,
+            DateTime ngayVaoLam,
+            Decimal luong,
+            int phanQuyen
+            )
+        {
+            _builder.SetUserId(maNhanVien);
+            _builder.SetUserName(tenNhanVien);
+            _builder.SetUserBirth(ngaySinh);
+            _builder.SetUserGender(gioiTinh);
+            _builder.SetUserCIN(cmnd);
+            _builder.SetUserPhone(sdt);
+            _builder.SetUserAddress(diaChi);
+            _builder.SetUserFirstDayWork(ngayVaoLam);
+            _builder.SetUserSalary(luong);
+            _builder.SetUserRole(phanQuyen);
+        }
+
+        public override NhanVien GetNhanVien()
+        {
+            return _builder.GetNhanVien();
+        }
+    }
+
     public class NhanVien
     {
         private string maNhanVien;

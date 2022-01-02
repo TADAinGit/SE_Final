@@ -140,32 +140,8 @@ namespace QUANLYQUAYTHUOC.AppForm
 
         void PrintNote() 
         {
-            string path = "..\\..\\AppResource\\note.pdf";
-
-            if (true)
-            {
-                Document document = new Document(PageSize.A4, 10, 10, 35, 35);
-                PdfWriter writer = PdfWriter.GetInstance(document, new FileStream(path, FileMode.Create));
-                document.Open();
-
-                //Full path to the Unicode Arial file
-                string ARIALUNI_TFF = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Fonts), "Arial.ttf");
-
-                //Create a base font object making sure to specify IDENTITY-H
-                BaseFont baseFont = BaseFont.CreateFont(ARIALUNI_TFF, BaseFont.IDENTITY_H, BaseFont.NOT_EMBEDDED);
-
-                //Create a specific font object
-                iTextSharp.text.Font font = new iTextSharp.text.Font(baseFont, 12, iTextSharp.text.Font.NORMAL);
-
-                Paragraph paragraph = new Paragraph("Username: " + txtAccount.Text, font);
-                paragraph.Alignment = Element.ALIGN_CENTER;
-                document.Add(paragraph);
-                paragraph = new Paragraph("Password: " + txtPassword.Text, font);
-                paragraph.Alignment = Element.ALIGN_CENTER;
-                document.Add(paragraph);
-
-                document.Close();
-            }
+            PrintContext context = new PrintContext(new NoteStrategy(txtAccount.Text, txtPassword.Text));
+            context.Print();
         }
 
         bool CheckFillAddAccount() 

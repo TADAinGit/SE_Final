@@ -10,32 +10,32 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using BUS;
+using DTO;
 
 namespace QUANLYQUAYTHUOC.AppForm
 {
     public partial class BanHangForm : DevExpress.XtraEditors.XtraUserControl
-    {
-        SanPhamBanBUS sanPham = new SanPhamBanBUS();
-        NhaCungCapBUS nhaCungCap = new NhaCungCapBUS();
-        
+    {   
         public BanHangForm()
         {
             InitializeComponent();
-            sanPham.LoadComboBoxLoaiSanPham(cbLocLoaiSanPham);
-            nhaCungCap.LoadComboBoxTenNhaCungCap(cbLocNhaCungCap);
+            //sanPham.LoadComboBoxLoaiSanPham(cbLocLoaiSanPham);
+            //nhaCungCap.LoadComboBoxTenNhaCungCap(cbLocNhaCungCap);
             List<TextBox> listTextBox = new List<TextBox>();
             listTextBox.Add(txtMaSanPham);
             listTextBox.Add(txtTenSanPham);
             listTextBox.Add(txtLoaiSanPham);
             listTextBox.Add(txtGiaTien);
             listTextBox.Add(txtTongTien);
-            sanPham.GetTextBox(listTextBox);
+            //sanPham.GetTextBox(listTextBox);
+            BanHangFacade.Instance.SetUpFilterData(cbLocLoaiSanPham, cbLocNhaCungCap, listTextBox);
         }
 
         private void BanHangForm_Load(object sender, EventArgs e)
         {
             this.Dock = DockStyle.Fill;
-            sanPham.LoadSanPham(fpnlSanPham);
+            //sanPham.LoadSanPham(fpnlSanPham);
+            BanHangFacade.Instance.SetUpData(fpnlSanPham);
         }
 
         private void btnGiam10_Click(object sender, EventArgs e)
@@ -75,7 +75,8 @@ namespace QUANLYQUAYTHUOC.AppForm
                 soLuong = (int)numSoLuong.Value;
                 giaBan = Int32.Parse(txtGiaTien.Text);
 
-                sanPham.AddItemToListView(listThongTinDonHang, int.Parse(maSanPham), tenSanPham, soLuong, giaBan);
+                //sanPham.AddItemToListView(listThongTinDonHang, int.Parse(maSanPham), tenSanPham, soLuong, giaBan);
+                BanHangFacade.Instance.AddToBill(listThongTinDonHang, int.Parse(maSanPham), tenSanPham, soLuong, giaBan);
                 UpdateTotalPrice();
                 // Reset số lượng
                 ResetBill(false);
@@ -107,61 +108,38 @@ namespace QUANLYQUAYTHUOC.AppForm
 
         private void btnThanhToan_Click(object sender, EventArgs e)
         {
-            int maHD = 0;
-            string tenKH = "";
-            string sdtKH = "";
-            
+            int maHD;
+            string tenKH = "Unknown";;
+            string sdtKH = "Unknown"; ;
+
             // Check có hàng hoặc đã nhận tiền đủ/dư mới cho thanh toán
             if (listThongTinDonHang.Items.Count <= 0 || txtTienNhan.Text.Length <= 0) return;
 
-            // Thanh toán cho khách hàng có điền thông tin
             if (txtPhone.Text.Length > 0 && txtKhachHang.Text.Length > 0)
             {
                 tenKH = txtKhachHang.Text;
                 sdtKH = txtPhone.Text;
-                maHD = sanPham.SaveInvoice(new MainForm().GetMaNhanVien(), sdtKH, tenKH, DateTime.Today, int.Parse(txtTongTien.Text), listThongTinDonHang);
             }
-            // Thanh toán cho khách hàng không điền thông tin
-            else 
-            {
-                tenKH = "Unknown";
-                sdtKH = "Unknown";
-                maHD = sanPham.SaveInvoice(new MainForm().GetMaNhanVien(), sdtKH, tenKH, DateTime.Today, int.Parse(txtTongTien.Text), listThongTinDonHang);
-            }
-
+            //maHD = sanPham.SaveInvoice(new MainForm().GetMaNhanVien(), sdtKH, tenKH, DateTime.Today, int.Parse(txtTongTien.Text), listThongTinDonHang);
+            maHD = BanHangFacade.Instance.GenerateInvoice(new MainForm().GetMaNhanVien(), sdtKH, tenKH, DateTime.Today, int.Parse(txtTongTien.Text), listThongTinDonHang);
             if (chkInHoaDon.Checked)
             {
                 if (maHD != 0)
                 {
-                    PrintInvoice(maHD, tenKH, sdtKH);
+                    PrintContext context = new PrintContext(new InHoaDonStrategy(maHD,tenKH,sdtKH, txtTienNhan.Text, txtTienThua.Text));
+                    context.Print();
                 }
             }
 
             // Reset lại nội dung sau khi thanh toán
             ResetBill(true);
-            sanPham.ResetSanPham(fpnlSanPham);
+            //sanPham.ResetSanPham(fpnlSanPham);
+            BanHangFacade.Instance.ResetData(fpnlSanPham);
             txtKhachHang.Clear();
             txtPhone.Clear();
             txtTienThua.ResetText();
             txtTienNhan.ResetText();
             txtTongTien.Clear();
-        }
-
-        void PrintInvoice(int maHoaDon, string tenKH, string sdtKH) 
-        {
-            HoaDonBUS hoaDon = new HoaDonBUS();
-            InvoiceReport report = new InvoiceReport();
-            
-            foreach (DevExpress.XtraReports.Parameters.Parameter param in report.Parameters)
-            {
-                param.Visible = false;
-            }
-
-            string tenNhanVien = new NhanVienBUS().GetUserInformation().TenNhanVien;
-            string maNhanVien = new NhanVienBUS().GetUserInformation().MaNhanVien;
-
-            report.InitData(maHoaDon.ToString(), DateTime.Today, tenNhanVien, maNhanVien, tenKH, sdtKH, txtTienNhan.Text, txtTienThua.Text, hoaDon.GetInvoiceDetailById(maHoaDon));
-            report.ExportToPdf(Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + @"\invoice.pdf");
         }
 
         private void btnReset_Click(object sender, EventArgs e)
@@ -197,13 +175,14 @@ namespace QUANLYQUAYTHUOC.AppForm
         {
             if (txtMaSanPham.TextLength > 0) 
             {
-                numSoLuong.Maximum = sanPham.GetProductByID(int.Parse(txtMaSanPham.Text)).SoLuong;
+                //numSoLuong.Maximum = sanPham.GetProductByID(int.Parse(txtMaSanPham.Text)).SoLuong;
+                numSoLuong.Maximum = BanHangFacade.Instance.GetProductById(int.Parse(txtMaSanPham.Text)).SoLuong;
             }
         }
 
         private void btnFilterReset_Click(object sender, EventArgs e)
         {
-            sanPham.ResetSanPham(fpnlSanPham);
+            BanHangFacade.Instance.ResetData(fpnlSanPham);
             txtLocMaSanPham.Clear();
             txtLocTenSanPham.Clear();
             cbLocLoaiSanPham.SelectedItem = null;
@@ -222,7 +201,7 @@ namespace QUANLYQUAYTHUOC.AppForm
             if (cbLocLoaiSanPham.SelectedItem != null) loaiSanPham = cbLocLoaiSanPham.SelectedItem.ToString();
             if (cbLocNhaCungCap.SelectedItem != null) tenNhaCungCap = cbLocNhaCungCap.SelectedItem.ToString();
 
-            sanPham.LoadFilterSanPham(fpnlSanPham, maSanPham, tenSanPham, loaiSanPham, tenNhaCungCap);
+            BanHangFacade.Instance.LoadFilter(fpnlSanPham, maSanPham, tenSanPham, loaiSanPham, tenNhaCungCap);
         }
 
         private void txtLocMaSanPham_KeyPress(object sender, KeyPressEventArgs e)
@@ -236,6 +215,67 @@ namespace QUANLYQUAYTHUOC.AppForm
             {
                 e.Handled = true;
             }
+        }
+    }
+
+    public class BanHangFacade
+    {
+        private static BanHangFacade instance;
+
+        private SanPhamBanBUS sanPham;
+        private NhaCungCapBUS nhaCungCap;
+
+        public static BanHangFacade Instance
+        {
+            get
+            {
+                if (instance == null)
+                {
+                    instance = new BanHangFacade();
+                }
+                return BanHangFacade.instance;
+            }
+        }
+
+        public BanHangFacade()
+        {
+            sanPham = new SanPhamBanBUS();
+            nhaCungCap = new NhaCungCapBUS();
+        }
+
+        public void SetUpFilterData(System.Windows.Forms.ComboBox cbLoaiSanPham, System.Windows.Forms.ComboBox cbNCC, List<TextBox> listTextBox)
+        {
+            sanPham.LoadComboBoxLoaiSanPham(cbLoaiSanPham);
+            nhaCungCap.LoadComboBoxTenNhaCungCap(cbNCC);
+            sanPham.GetTextBox(listTextBox);
+        }
+
+        public void SetUpData(FlowLayoutPanel panel)
+        {
+            sanPham.LoadSanPham(panel);
+        }
+
+        public void AddToBill(ListView bill, int maSP, string tenSP, int sl, float giaBan)
+        {
+            sanPham.AddItemToListView(bill, maSP, tenSP, sl, giaBan);
+        }
+
+        public int GenerateInvoice(string maNV, string sdtKH, string tenKH, DateTime date, int tongTien, ListView bill) 
+        {
+            return sanPham.SaveInvoice(maNV, sdtKH, tenKH, date, tongTien, bill);
+        }
+
+        public void ResetData(FlowLayoutPanel panel) 
+        {
+            sanPham.ResetSanPham(panel);
+        }
+        public SanPhamBan GetProductById(int id) 
+        {
+            return sanPham.GetProductByID(id);
+        }
+        public void LoadFilter(FlowLayoutPanel fpnlSanPham, int maSanPham, string tenSanPham, string loaiSanPham, string tenNhaCungCap) 
+        {
+            sanPham.LoadFilterSanPham(fpnlSanPham, maSanPham, tenSanPham, loaiSanPham, tenNhaCungCap);
         }
     }
 }

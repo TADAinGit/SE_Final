@@ -15,6 +15,7 @@ namespace QUANLYQUAYTHUOC.AppForm
 {
     public partial class ThongTinCaNhanForm : DevExpress.XtraEditors.XtraUserControl
     {
+        Creator creator = new NhanVienCreator(new NhanVienBuilder());
 
         public ThongTinCaNhanForm()
         {
@@ -53,32 +54,38 @@ namespace QUANLYQUAYTHUOC.AppForm
 
         private void btnCapNhat_Click(object sender, EventArgs e)
         {
-            NhanVien nv = new NhanVien();
-            nv.MaNhanVien = txtMaNV.Text;
-            nv.TenNhanVien = txtTen.Text;
-            nv.NgaySinh = Convert.ToDateTime(txtNgaySinh.Text);
-            if (txtGioiTinh.Text.Equals("Nữ"))
-                nv.GioiTinh = true;
-            else if (txtGioiTinh.Text.Equals("Nam"))
-                nv.GioiTinh = false;
-            else
-                MessageBox.Show("Giới Tính phải là Nam hoặc Nữ!", "Error", MessageBoxButtons.OK);
-            nv.CMND = txtCMND.Text;
-            nv.SDT = txtSDT.Text;
-            nv.DiaChi = txtDiaChi.Text;
-            nv.NgayVaoLam = Convert.ToDateTime(txtNgayVao.Text);
-            nv.Luong = Convert.ToInt32(txtLuong.Text);
-            if (txtChucVu.Text.Equals("Admin"))
-                nv.PhanQuyen = 0;
-            else
-                nv.PhanQuyen = 1;
-            int result = NhanVienBUS.UpdateThongTinNhanVien(nv);
+            string maNhanVien = txtMaNV.Text; 
+            string tenNhanVien = txtTen.Text;
+            DateTime ngaySinh = Convert.ToDateTime(txtNgaySinh.Text);
+            bool gioiTinh = txtGioiTinh.Text.Equals("Nữ");
+            string cmnd = txtCMND.Text;
+            string sdt = txtSDT.Text;
+            string diaChi = txtDiaChi.Text;
+            DateTime ngayVaoLam = Convert.ToDateTime(txtNgayVao.Text);
+            Decimal luong = Convert.ToInt32(txtLuong.Text);
+            int phanQuyen = txtChucVu.Text.Equals("Admin") ? 0 : 1;
+            
+            creator.CreateNhanVien(
+                maNhanVien,
+                tenNhanVien,
+                ngaySinh,
+                gioiTinh,
+                cmnd,
+                sdt,
+                diaChi,
+                ngayVaoLam,
+                luong,
+                phanQuyen
+                );
+
+            NhanVien nhanVien = creator.GetNhanVien();
+
+            int result = NhanVienBUS.UpdateThongTinNhanVien(nhanVien);
             if (result == 1)
                 MessageBox.Show("Cập Nhật Thành Công!!!", "Success", MessageBoxButtons.OK);
             else
                 MessageBox.Show("Cập Nhật Thất Bại", "Fail", MessageBoxButtons.OK);
 
-            
         }
     }
 }

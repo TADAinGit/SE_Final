@@ -62,45 +62,8 @@ namespace QUANLYQUAYTHUOC.AppForm
         // In tem mã vạch
         private void btnInTemMaVach_Click(object sender, EventArgs e)
         {
-            string path = "..\\..\\AppResource\\barcode.pdf";
-            
-            if (barcodeControl.Text != "Default") 
-            {
-                Document document = new Document(PageSize.A4, 10, 10, 35, 35);
-                PdfWriter writer = PdfWriter.GetInstance(document, new FileStream(path, FileMode.Create));
-                document.Open();
-
-                //Full path to the Unicode Arial file
-                string ARIALUNI_TFF = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Fonts), "Arial.ttf");
-
-                //Create a base font object making sure to specify IDENTITY-H
-                BaseFont baseFont = BaseFont.CreateFont(ARIALUNI_TFF, BaseFont.IDENTITY_H, BaseFont.NOT_EMBEDDED);
-
-                //Create a specific font object
-                iTextSharp.text.Font font = new iTextSharp.text.Font(baseFont, 12, iTextSharp.text.Font.NORMAL);
-
-                Paragraph paragraph = new Paragraph(txtID + " - " + txtTenSanPham.Text,font);
-                paragraph.Alignment = Element.ALIGN_CENTER;
-                document.Add(paragraph);
-                
-
-                iTextSharp.text.Image image = iTextSharp.text.Image.GetInstance(barcodeControl.ExportToImage(), System.Drawing.Imaging.ImageFormat.Png);
-                image.Alignment = iTextSharp.text.Image.ALIGN_MIDDLE;
-                document.Add(image);
-
-                document.Add(new Paragraph("\n"));
-
-                PdfPTable table = new PdfPTable(3);
-                for (int i = 0; i < 10; i++) 
-                {
-                    table.AddCell(image);
-                    table.AddCell(image);
-                    table.AddCell(image);
-                }
-                
-                document.Add(table);
-                document.Close();
-            }
+            PrintContext context = new PrintContext(new InMaVachStrategy(barcodeControl.ExportToImage(), txtTenSanPham.Text, txtID.Text));
+            context.Print();
         }
 
         private void btnLocSanPham_Click(object sender, EventArgs e)

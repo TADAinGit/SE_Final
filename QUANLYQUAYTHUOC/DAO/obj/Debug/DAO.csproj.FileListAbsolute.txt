@@ -70,3 +70,12 @@ C:\Users\nguye\OneDrive\Desktop\DEADLINE\CNPM\finalcnpm\QUANLYQUAYTHUOC\DAO\obj\
 C:\Users\nguye\OneDrive\Desktop\DEADLINE\CNPM\finalcnpm\QUANLYQUAYTHUOC\DAO\obj\Debug\DAO.csproj.CopyComplete
 C:\Users\nguye\OneDrive\Desktop\DEADLINE\CNPM\finalcnpm\QUANLYQUAYTHUOC\DAO\obj\Debug\DAO.dll
 C:\Users\nguye\OneDrive\Desktop\DEADLINE\CNPM\finalcnpm\QUANLYQUAYTHUOC\DAO\obj\Debug\DAO.pdb
+D:\Code\Visual Studio Workspace\DesignPatternFinal\SE_Final\QUANLYQUAYTHUOC\DAO\bin\Debug\DAO.dll
+D:\Code\Visual Studio Workspace\DesignPatternFinal\SE_Final\QUANLYQUAYTHUOC\DAO\bin\Debug\DAO.pdb
+D:\Code\Visual Studio Workspace\DesignPatternFinal\SE_Final\QUANLYQUAYTHUOC\DAO\bin\Debug\DTO.dll
+D:\Code\Visual Studio Workspace\DesignPatternFinal\SE_Final\QUANLYQUAYTHUOC\DAO\bin\Debug\DTO.pdb
+D:\Code\Visual Studio Workspace\DesignPatternFinal\SE_Final\QUANLYQUAYTHUOC\DAO\obj\Debug\DAO.csproj.AssemblyReference.cache
+D:\Code\Visual Studio Workspace\DesignPatternFinal\SE_Final\QUANLYQUAYTHUOC\DAO\obj\Debug\DAO.csproj.CoreCompileInputs.cache
+D:\Code\Visual Studio Workspace\DesignPatternFinal\SE_Final\QUANLYQUAYTHUOC\DAO\obj\Debug\DAO.csproj.CopyComplete
+D:\Code\Visual Studio Workspace\DesignPatternFinal\SE_Final\QUANLYQUAYTHUOC\DAO\obj\Debug\DAO.dll
+D:\Code\Visual Studio Workspace\DesignPatternFinal\SE_Final\QUANLYQUAYTHUOC\DAO\obj\Debug\DAO.pdb
